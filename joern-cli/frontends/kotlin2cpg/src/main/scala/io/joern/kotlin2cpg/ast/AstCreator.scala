@@ -368,7 +368,7 @@ class AstCreator(
 
     val name                       = NamespaceTraversal.globalNamespaceName
     val fullName                   = node.fullName
-    val fakeGlobalTypeDeclFullName = s"$fullName:$relativizedPath"
+    val fakeGlobalTypeDeclFullName = s"$relativizedPath:$fullName"
     val fakeGlobalMethodFullName   = s"$fakeGlobalTypeDeclFullName.global"
     val fakeGlobalTypeDecl =
       typeDeclNode(ktFile, name, fakeGlobalTypeDeclFullName, relativizedPath, name, NodeTypes.NAMESPACE_BLOCK, fullName)
