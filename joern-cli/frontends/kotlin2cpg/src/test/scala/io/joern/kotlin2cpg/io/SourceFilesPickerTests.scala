@@ -12,6 +12,21 @@ class SourceFilesPickerTests extends AnyFreeSpec with Matchers with BeforeAndAft
       val inFileName = "/path/does/not/exist/build.gradle"
       SourceFilesPicker.shouldFilter(inFileName) shouldBe false
     }
+
+    "should filter generated Kotlin sources in `build` paths" in {
+      val inFileName = "artifact/build/generated/ksp/main/kotlin/com/example/HelloWorld.kt"
+      SourceFilesPicker.shouldFilter(inFileName) shouldBe true
+    }
+
+    "should filter generated Kotlin sources in `bin` paths" in {
+      val inFileName = "artifact/bin/main/com/example/HelloWorld.kt"
+      SourceFilesPicker.shouldFilter(inFileName) shouldBe true
+    }
+
+    "should not filter regular `src/main` Kotlin sources" in {
+      val inFileName = "artifact/src/main/kotlin/com/example/HelloWorld.kt"
+      SourceFilesPicker.shouldFilter(inFileName) shouldBe false
+    }
   }
 
 }

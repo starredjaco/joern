@@ -10,6 +10,7 @@ object SourceFilesPicker {
   private val SubstringsToFilterFor = List(
     ".idea",
     "target",
+    "bin",
     "build",
     "integrationTest",
     "integrationtest",
