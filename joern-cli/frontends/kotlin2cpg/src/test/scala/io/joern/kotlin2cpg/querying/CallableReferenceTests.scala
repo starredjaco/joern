@@ -92,7 +92,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
       ctorCalls.size shouldBe 1
 
       val ctorCall = ctorCalls.head
-      ctorCall.methodFullName shouldBe "com.test.Handler.process$kotlin.jvm.functions.Function2Impl.<init>:void(com.test.Handler)"
+      ctorCall.methodFullName shouldBe "com.test.Handler.process$kotlin.jvm.functions.Function2Impl.invoke:boolean(int,java.lang.String).<init>:void(com.test.Handler)"
       ctorCall.typeFullName shouldBe "void"
       ctorCall.signature shouldBe "void(com.test.Handler)"
 
@@ -114,13 +114,13 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
       constructors.size shouldBe 1
 
       val constructor = constructors.head
-      constructor.fullName shouldBe "com.test.Handler.process$kotlin.jvm.functions.Function2Impl.<init>:void(com.test.Handler)"
+      constructor.fullName shouldBe "com.test.Handler.process$kotlin.jvm.functions.Function2Impl.invoke:boolean(int,java.lang.String).<init>:void(com.test.Handler)"
       constructor.signature shouldBe "void(com.test.Handler)"
 
       val ctorParams = constructor.parameter.l.sortBy(_.index)
       ctorParams.size shouldBe 2
       ctorParams.head.name shouldBe "this"
-      ctorParams.head.typeFullName shouldBe "com.test.Handler.process$kotlin.jvm.functions.Function2Impl"
+      ctorParams.head.typeFullName shouldBe "com.test.Handler.process$kotlin.jvm.functions.Function2Impl.invoke:boolean(int,java.lang.String)"
       ctorParams(1).name shouldBe "handler"
       ctorParams(1).typeFullName shouldBe "com.test.Handler"
 
@@ -154,24 +154,14 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
 
     "have dynamic type hints on this parameter" in {
       val thisParam = invokeMethod.parameter.index(0).head
-      thisParam.dynamicTypeHintFullName shouldBe Seq("com.test.Handler.process$kotlin.jvm.functions.Function2Impl")
+      thisParam.dynamicTypeHintFullName shouldBe Seq(
+        "com.test.Handler.process$kotlin.jvm.functions.Function2Impl.invoke:boolean(int,java.lang.String)"
+      )
     }
 
     "have block code containing the actual method call" in {
       val block = invokeMethod.ast.isBlock.head
       block.code shouldBe "return receiver.process(p1, p2)"
-    }
-
-    "have a nested TypeDecl representing the function type" in {
-      val nestedTypeDecls = cpg.typeDecl.fullName(".*Function2Impl.*invoke.*").l
-      nestedTypeDecls.size shouldBe 1
-
-      val nestedTypeDecl = nestedTypeDecls.head
-      nestedTypeDecl.name shouldBe "invoke"
-      nestedTypeDecl.fullName shouldBe "com.test.Handler.process$kotlin.jvm.functions.Function2Impl.invoke:boolean(int,java.lang.String)"
-      nestedTypeDecl.astParentType shouldBe "TYPE_DECL"
-      nestedTypeDecl.astParentFullName shouldBe "com.test.Handler.process$kotlin.jvm.functions.Function2Impl"
-      nestedTypeDecl.inheritsFromTypeFullName should contain("kotlin.Function")
     }
   }
 
@@ -209,7 +199,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
       ctorCalls.size shouldBe 1
 
       val ctorCall = ctorCalls.head
-      ctorCall.methodFullName shouldBe "com.test.Utils$Companion.validate$kotlin.jvm.functions.Function1Impl.<init>:void(com.test.Utils$Companion)"
+      ctorCall.methodFullName shouldBe "com.test.Utils$Companion.validate$kotlin.jvm.functions.Function1Impl.invoke:boolean(int).<init>:void(com.test.Utils$Companion)"
       ctorCall.typeFullName shouldBe "void"
 
       val args = ctorCall.argument.l
@@ -251,7 +241,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
 
       val methodRef = methodRefs.head
       methodRef.methodFullName shouldBe "com.test.globalFunction:java.lang.String(int,int)"
-      methodRef.typeFullName shouldBe ("com.test.globalFunction$kotlin.jvm.functions.Function2Impl")
+      methodRef.typeFullName shouldBe ("com.test.globalFunction$kotlin.jvm.functions.Function2Impl.invoke:java.lang.String(int,int)")
     }
 
     "create a synthetic type that does NOT inherit from CallableReference" in {
@@ -371,21 +361,21 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
       val invokeMethod      = syntheticTypeDecl.method.name("invoke").head
 
       // Check invoke method
-      invokeMethod.fullName shouldBe "Counter.increment$kotlin.jvm.functions.Function0Impl.invoke:int()"
+      invokeMethod.fullName shouldBe "Counter.increment$kotlin.jvm.functions.Function0Impl.invoke:int().invoke:int()"
       invokeMethod.signature shouldBe "int()"
       val invokeParams = invokeMethod.parameter.l.sortBy(_.index)
       invokeParams.size shouldBe 1
       invokeParams.head.name shouldBe "this"
-      invokeParams.head.typeFullName shouldBe "Counter.increment$kotlin.jvm.functions.Function0Impl"
+      invokeParams.head.typeFullName shouldBe "Counter.increment$kotlin.jvm.functions.Function0Impl.invoke:int()"
 
       // Check constructor
       val constructor = syntheticTypeDecl.method.name("<init>").head
-      constructor.fullName shouldBe "Counter.increment$kotlin.jvm.functions.Function0Impl.<init>:void(Counter)"
+      constructor.fullName shouldBe "Counter.increment$kotlin.jvm.functions.Function0Impl.invoke:int().<init>:void(Counter)"
       constructor.signature shouldBe "void(Counter)"
       val ctorParams = constructor.parameter.l.sortBy(_.index)
       ctorParams.size shouldBe 2
       ctorParams.head.name shouldBe "this"
-      ctorParams.head.typeFullName shouldBe "Counter.increment$kotlin.jvm.functions.Function0Impl"
+      ctorParams.head.typeFullName shouldBe "Counter.increment$kotlin.jvm.functions.Function0Impl.invoke:int()"
       ctorParams(1).name shouldBe "counter"
       ctorParams(1).typeFullName shouldBe "Counter"
 
@@ -431,7 +421,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
       val invokeMethod      = syntheticTypeDecl.method.name("invoke").head
 
       // Check invoke method
-      invokeMethod.fullName shouldBe "Handler.process$kotlin.jvm.functions.Function1Impl.invoke:java.lang.String(java.lang.String)"
+      invokeMethod.fullName shouldBe "Handler.process$kotlin.jvm.functions.Function1Impl.invoke:java.lang.String(java.lang.String).invoke:java.lang.String(java.lang.String)"
       invokeMethod.signature shouldBe "java.lang.String(java.lang.String)"
       val invokeParams = invokeMethod.parameter.l.sortBy(_.index)
       invokeParams.size shouldBe 2
@@ -441,7 +431,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
 
       // Check constructor
       val constructor = syntheticTypeDecl.method.name("<init>").head
-      constructor.fullName shouldBe "Handler.process$kotlin.jvm.functions.Function1Impl.<init>:void(Handler)"
+      constructor.fullName shouldBe "Handler.process$kotlin.jvm.functions.Function1Impl.invoke:java.lang.String(java.lang.String).<init>:void(Handler)"
       constructor.signature shouldBe "void(Handler)"
       val ctorParams = constructor.parameter.l.sortBy(_.index)
       ctorParams.size shouldBe 2
@@ -488,7 +478,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
       val invokeMethod      = syntheticTypeDecl.method.name("invoke").head
 
       // Check invoke method
-      invokeMethod.fullName shouldBe "com.test.MyClass.method$kotlin.jvm.functions.Function1Impl.invoke:void(int)"
+      invokeMethod.fullName shouldBe "com.test.MyClass.method$kotlin.jvm.functions.Function1Impl.invoke:void(int).invoke:void(int)"
       invokeMethod.signature shouldBe "void(int)"
       val invokeParams = invokeMethod.parameter.l.sortBy(_.index)
       invokeParams.size shouldBe 2
@@ -498,7 +488,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
 
       // Check constructor
       val constructor = syntheticTypeDecl.method.name("<init>").head
-      constructor.fullName shouldBe "com.test.MyClass.method$kotlin.jvm.functions.Function1Impl.<init>:void(com.test.MyClass)"
+      constructor.fullName shouldBe "com.test.MyClass.method$kotlin.jvm.functions.Function1Impl.invoke:void(int).<init>:void(com.test.MyClass)"
       constructor.signature shouldBe "void(com.test.MyClass)"
       val ctorParams = constructor.parameter.l.sortBy(_.index)
       ctorParams.size shouldBe 2
@@ -544,7 +534,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
 
       // Check map method (SAM interface method)
       val mapMethod = syntheticTypeDecl.method.name("map").head
-      mapMethod.fullName shouldBe "com.test.Converter.convertStrings$com.test.MapperImpl.map:java.util.List(java.util.List)"
+      mapMethod.fullName shouldBe "com.test.Converter.convertStrings$com.test.MapperImpl.map:java.util.List(java.util.List).map:java.util.List(java.util.List)"
       mapMethod.signature shouldBe "java.util.List(java.util.List)"
       val mapParams = mapMethod.parameter.l.sortBy(_.index)
       mapParams.size shouldBe 2
@@ -554,7 +544,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
 
       // Check constructor
       val constructor = syntheticTypeDecl.method.name("<init>").head
-      constructor.fullName shouldBe "com.test.Converter.convertStrings$com.test.MapperImpl.<init>:void(com.test.Converter)"
+      constructor.fullName shouldBe "com.test.Converter.convertStrings$com.test.MapperImpl.map:java.util.List(java.util.List).<init>:void(com.test.Converter)"
       constructor.signature shouldBe "void(com.test.Converter)"
       val ctorParams = constructor.parameter.l.sortBy(_.index)
       ctorParams.size shouldBe 2
@@ -610,7 +600,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
       val ctorCalls = cpg.call
         .nameExact("<init>")
         .methodFullNameExact(
-          "com.test.Calculator.add$kotlin.jvm.functions.Function2Impl.<init>:void(com.test.Calculator)"
+          "com.test.Calculator.add$kotlin.jvm.functions.Function2Impl.invoke:int(int,int).<init>:void(com.test.Calculator)"
         )
         .l
       ctorCalls.size shouldBe 3
@@ -671,13 +661,13 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
 
     "should have the correct invoke method" in {
       val invokeMethod = syntheticTypeDecl.method.name("invoke").head
-      invokeMethod.fullName shouldBe "com.test.Calculator.add$kotlin.jvm.functions.Function2Impl.invoke:int(int,int)"
+      invokeMethod.fullName shouldBe "com.test.Calculator.add$kotlin.jvm.functions.Function2Impl.invoke:int(int,int).invoke:int(int,int)"
       invokeMethod.signature shouldBe "int(int,int)"
     }
 
     "should have the correct constructor" in {
       val constructor = syntheticTypeDecl.method.name("<init>").head
-      constructor.fullName shouldBe "com.test.Calculator.add$kotlin.jvm.functions.Function2Impl.<init>:void(com.test.Calculator)"
+      constructor.fullName shouldBe "com.test.Calculator.add$kotlin.jvm.functions.Function2Impl.invoke:int(int,int).<init>:void(com.test.Calculator)"
       constructor.signature shouldBe "void(com.test.Calculator)"
     }
 
@@ -685,7 +675,7 @@ class CallableReferenceTests extends KotlinCode2CpgFixture(withOssDataflow = fal
       val ctorCalls = cpg.call
         .nameExact("<init>")
         .methodFullNameExact(
-          "com.test.Calculator.add$kotlin.jvm.functions.Function2Impl.<init>:void(com.test.Calculator)"
+          "com.test.Calculator.add$kotlin.jvm.functions.Function2Impl.invoke:int(int,int).<init>:void(com.test.Calculator)"
         )
         .l
       ctorCalls.size shouldBe 3

@@ -781,17 +781,6 @@ class AstCreator(
       samInfo.samGenericMethodSig
     )
 
-    val methodTypeDecl = typeDeclNode(
-      samInfo.expr,
-      samInfo.samMethodName,
-      samMethodFullName,
-      relativizedPath,
-      samInfo.samMethodName,
-      NodeTypes.TYPE_DECL,
-      samInfo.samImplClass,
-      Seq(registerType("kotlin.Function"))
-    )
-
     val receiverType = samInfo.receiverTypeFullName
     val ctorFullName = s"${samInfo.samImplClass}.<init>:void(${receiverType})"
     val ctorNode =
@@ -844,7 +833,7 @@ class AstCreator(
         ctorModifiers
       )
 
-    Ast(samTypeDecl).withChild(methodAst_).withChild(ctorAst).withChild(Ast(methodTypeDecl))
+    Ast(samTypeDecl).withChild(methodAst_).withChild(ctorAst)
   }
 
   protected def createSamImplTypeDecl(samInfo: SamImplInfo): Ast = {

@@ -848,9 +848,10 @@ trait AstForExpressionsCreator(implicit withSchemaValidation: ValidationMode) {
       if (receiverInfo.hasReceiver) List(inheritsFromTypeFullName, "kotlin.jvm.internal.CallableReference")
       else List(inheritsFromTypeFullName)
 
-    val samImplClass = s"$fullName$$${inheritsFromTypeFullName}Impl"
-
     val samMethodInfo = resolveSamMethodInfo(exprType, funcDesc)
+
+    val samImplClass =
+      s"$fullName$$${inheritsFromTypeFullName}Impl.${samMethodInfo.methodName}:${samMethodInfo.signature}"
 
     if (isUnboundReference) {
       val methodRefNode = NewMethodRef()
@@ -872,7 +873,7 @@ trait AstForExpressionsCreator(implicit withSchemaValidation: ValidationMode) {
         expr
       )
 
-      val samMethodFullName = s"$samImplClass.${samMethodInfo.methodName}:${samMethodInfo.signature}"
+      val samMethodFullName = samImplClass
       samImplInfoQueue.getOrElseUpdate(samMethodFullName, samInfo)
 
       Ast(methodRefNode)
