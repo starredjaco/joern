@@ -469,15 +469,14 @@ trait AstCreatorHelper(implicit withSchemaValidation: ValidationMode) { this: As
   }
 
   private def calcMethodName(func: SwiftNode): String = {
-    val name = func match {
-      case f: FunctionDeclSyntax      => code(f.name)
+    func match {
+      case f: FunctionDeclSyntax      => cleanName(code(f.name))
       case a: AccessorDeclSyntax      => code(a.accessorSpecifier)
       case d: DeinitializerDeclSyntax => code(d.deinitKeyword)
       case i: InitializerDeclSyntax   => code(i.initKeyword)
-      case s: SubscriptDeclSyntax     => code(s.subscriptKeyword)
+      case s: SubscriptDeclSyntax     => scopeLocalUniqueName(code(s.subscriptKeyword))
       case _                          => nextClosureName()
     }
-    cleanName(name)
   }
 
 }
