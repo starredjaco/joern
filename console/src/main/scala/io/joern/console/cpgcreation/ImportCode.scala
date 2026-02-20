@@ -102,8 +102,9 @@ class ImportCode[T <: Project](console: io.joern.console.Console[T])(implicit
       config: FrontendConfig,
       rootPath: Path,
       args: List[String]
-    ): Option[CpgGenerator] =
+    ): Option[CpgGenerator] = {
       io.joern.console.cpgcreation.cpgGeneratorForLanguage(language, config, rootPath, args)
+    }
 
     def isAvailable: Boolean =
       cpgGeneratorForLanguage(language, config.frontend, config.install.rootPath, args = Nil).exists(_.isAvailable)
