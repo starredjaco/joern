@@ -19,7 +19,7 @@ package object cpgcreation {
     args: List[String]
   ): Option[CpgGenerator] = {
     lazy val conf = config.withArgs(args)
-    language match {
+    val generator = language match {
       case Languages.CSHARP             => Some(CSharpCpgGenerator(conf, rootPath))
       case Languages.CSHARPSRC          => Some(CSharpSrcCpgGenerator(conf, rootPath))
       case Languages.C | Languages.NEWC => Some(CCpgGenerator(conf, rootPath))
@@ -40,6 +40,8 @@ package object cpgcreation {
       case Languages.SWIFTSRC  => Some(SwiftSrcCpgGenerator(conf, rootPath))
       case _                   => None
     }
+
+    generator.filter(_.isAvailable)
   }
 
   /** Heuristically determines language by inspecting file/dir at path.

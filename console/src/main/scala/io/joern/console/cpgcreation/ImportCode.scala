@@ -34,14 +34,15 @@ class ImportCode[T <: Project](console: io.joern.console.Console[T])(implicit
     */
   def apply(inputPath: String, projectName: String = "", language: String = ""): Cpg = {
     checkInputPath(inputPath)
+    val errHint = "To get an overview of all available language modules, try `importCode`.\nTo choose a specific language, try `importCode.<language>`."
     if (language != "") {
       generatorFactory.forLanguage(language) match {
-        case None           => throw new ConsoleException(s"No CPG generator exists for language: $language")
+        case None           => throw new ConsoleException(s"No CPG generator exists for language: $language\n$errHint")
         case Some(frontend) => apply(frontend, inputPath, projectName)
       }
     } else {
       generatorFactory.forCodeAt(inputPath) match {
-        case None           => throw new ConsoleException(s"No suitable CPG generator found for: $inputPath")
+        case None           => throw new ConsoleException(s"No suitable CPG generator found for: $inputPath\n$errHint")
         case Some(frontend) => apply(frontend, inputPath, projectName)
       }
     }
